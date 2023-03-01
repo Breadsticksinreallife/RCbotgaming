@@ -15,7 +15,7 @@ void lookForSignal() {
   readByte3 = char(mySerial.read());
   readByte4 = char(mySerial.read());
 }
-void recieveSignal() {
+void receiveSignal() {
   while (mySerial.available() < 1)
     ;
   address = char(mySerial.read());
@@ -42,11 +42,11 @@ void simpleSignal() {
 void setup() {
   // put your setup code here, to run once:
   mySerial.begin(4800);
-  Serial.begin(4800);
-  pinMode(A3, OUTPUT);
+  Serial.begin(9600);
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-  void simpleSignal();
+  //simpleSignal();
+  receiveSignal();
 }
