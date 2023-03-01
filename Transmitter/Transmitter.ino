@@ -21,11 +21,27 @@ void offy() {
     TCNT1 = 0;
 }
 
+void sendaByte (byte dataByte) {
+timer1Setup(); // start carrier frequency
+delayMicroseconds(100); // ~2 full cycle running start
+Serial1.write(dataByte); // byte byte, sorry, bye bye byte
+while (!(UCSR1A & (1 << TXC1))); // USART Control Status Reg
+// (p.209),
+// wait for the transmit
+// complete flag, TXC1 bit 6
+// to be set
+delayMicroseconds(100); // modulation overlap on the back end
+offy(); // turn off modulator signal to save power
+}
+
 void setup() {
     Serial1.begin(4800); // 36kHz/4800 = 7.5 carrier freq cycles
 
 }
 
-void loop() {
+byte test = 42;
 
+void loop() {
+    sendaByte(test);
+    delay(20);
 }
