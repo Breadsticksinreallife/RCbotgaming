@@ -1,31 +1,52 @@
+#include <SoftwareSerial.h>
 
+SoftwareSerial mySerial(10, 11);
+byte address;
+byte readByte1;
+byte readByte2;
+byte readByte3;
+byte readByte4;
+void lookForSignal() {
+  while (mySerial.available() < 5)
+    ;
+  address = char(mySerial.read());
+  readByte1 = char(mySerial.read());
+  readByte2 = char(mySerial.read());
+  readByte3 = char(mySerial.read());
+  readByte4 = char(mySerial.read());
+}
+void recieveSignal() {
+  while (mySerial.available() < 1)
+    ;
+  address = char(mySerial.read());
+  while (mySerial.available() < 1)
+    ;
+  readByte1 = char(mySerial.read());
+  while (mySerial.available() < 1)
+    ;
+  readByte2 = char(mySerial.read());
+  while (mySerial.available() < 1)
+    ;
+  readByte3 = char (mySerial.read());
+    while (mySerial.available() < 1);
+  readByte4 = char (mySerial.read());
+}
+void simpleSignal() {
+  while (mySerial.available() < 1)
+    ;
+  address = char(mySerial.read());
+  Serial.println(address);
+}
 
-
-void timer1Setup() { 
-  TCCR1A = 0;  // first zero the registers 
-  TCCR1B = 0;  // in preparation to set bits 
-  OCR1A = 0; 
-  TCNT1 = 0; 
-             // now set bits! 
-  DDRB |= (1 << DDB5);     // set PB5 as an output 
-  TCCR1A |= (1 << COM1A0); //Timer1 in toggle mode Table 14-2 
-  TCCR1B |= (1 << WGM12); //Start timer 1 in CTC mode Table 14-4 
-  TCCR1B |= (1 << CS10);   // Prescaler table 14-5 
-  OCR1A = 221;               //CTC Compare value, 14.10.12 
-} 
-void offy () { 
-  TCCR1A = 0; 
-  TCCR1B = 0; 
-  OCR1A = 0; 
-  TCNT1 = 0; 
-} 
 
 void setup() {
   // put your setup code here, to run once:
-
+  mySerial.begin(4800);
+  Serial.begin(4800);
+  pinMode(A3, OUTPUT);
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-
+  void simpleSignal();
 }
