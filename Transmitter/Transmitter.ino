@@ -42,6 +42,12 @@ void setup() {
 byte test = 42;
 
 void loop() {
-    sendaByte(test);
-    delay(20);
+    sendaByte(1); // address byte
+
+    sendaByte(2);
+    sendaByte(4);
+    sendaByte(6);
+    sendaByte(8);
+
+    sendaByte(~(2 + 4 + 6 + 8) + 1);
 }
