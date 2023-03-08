@@ -36,18 +36,36 @@ offy(); // turn off modulator signal to save power
 
 void setup() {
     Serial1.begin(4800); // 36kHz/4800 = 7.5 carrier freq cycles
-
+    // pinMode(A0, INPUT); //Joystick - V
+    // pinMode(A1, INPUT); //Joystick - H
+    Serial.begin(9600);
 }
 
 byte test = 42;
 
 void loop() {
     sendaByte(1); // address byte
+    delay(10);
 
-    sendaByte(2);
-    sendaByte(4);
+    digitalWrite(8, HIGH);
+    delayMicroseconds(5);
+    int temp1 = analogRead(0);
+    int temp2 = analogRead(1);
+    byte test1 = temp1 / 4;
+    byte test2 = temp2 / 4;
+    digitalWrite(8, LOW);
+
+    Serial.println(temp1);
+    Serial.println(temp2);
+
+    sendaByte(test1);
+    delay(10);
+    sendaByte(test2);
+    delay(10);
     sendaByte(6);
+    delay(10);
     sendaByte(8);
+    delay(10);
 
-    sendaByte(~(2 + 4 + 6 + 8) + 1);
+    sendaByte(~(test1 + test2 + 6 + 8) + 1);
 }
