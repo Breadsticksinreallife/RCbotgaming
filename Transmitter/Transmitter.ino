@@ -43,6 +43,15 @@ void setup() {
 
 byte test = 42;
 
+//Packet 1:
+// Left Motor Power
+// Packet 2:
+// Right Motor Power
+// Packet 3:
+// 0000 + LeftMotorDir, RightMotorDir, Button1State, Button2State: 1 is CCW, 0 IS CW
+// Packet 4:
+// No information yet (send 4);
+
 void loop() {
     sendaByte(1); // address byte
     delay(10);
@@ -51,21 +60,32 @@ void loop() {
     delayMicroseconds(5);
     int temp1 = analogRead(0);
     int temp2 = analogRead(1);
-    byte test1 = temp1 / 4;
-    byte test2 = temp2 / 4;
+    byte test1 = abs(temp1 - 512) / 2;
+    byte test2 = abs(temp2 - 502) / 2;
     digitalWrite(8, LOW);
 
-    Serial.println(temp1);
-    Serial.println(temp2);
+    Serial.print(test1);
+    Serial.print(" ");
+    Serial.println(test2);
 
     sendaByte(test1);
     delay(10);
     sendaByte(test2);
     delay(10);
-    sendaByte(6);
+
+    byte temp3 = 0b0;
+    if ( (temp1 - 512) > 0) {
+        temp3 |= 0b1000;
+    };
+
+    if ( (temp2 - 512) > 0) {
+        temp3 |= 0b0100;
+    };
+    sendaByte(temp3);
     delay(10);
+
     sendaByte(8);
     delay(10);
 
-    sendaByte(~(test1 + test2 + 6 + 8) + 1);
+    sendaByte(~(test1 + test2 + temp3 + 8) + 1);
 }
