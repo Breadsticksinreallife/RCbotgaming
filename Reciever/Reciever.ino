@@ -50,10 +50,10 @@ void receiveSignal() {
   while (mySerial.available() < 1)
     ;
   address = char(mySerial.read());
-  if (address != 1) {
+  /*if (address != 1) {
     Serial.println("no address found");
     return;
-  }
+  }*/
   while (mySerial.available() < 1)
     ;
   readByte1 = char(mySerial.read());  //Left Motor Power
@@ -69,8 +69,8 @@ void receiveSignal() {
   while (mySerial.available() < 1)
     ;
   readByte5 = char(mySerial.read());
-  /*Serial.print("b5 is ");
-  Serial.println(readByte5);*/
+  Serial.print("b5 is ");
+  Serial.println(readByte5);
 }
 void checksumGoofs() {
   byte checksum = ~(readByte1 + readByte2 + readByte3 + readByte4) + 1;
@@ -124,7 +124,7 @@ void loop() {
   receiveSignal();
   checksumGoofs();
   delay(10);
-  analogWrite(leftMotor_PWM_pin, (readByte1 * 4) - 1);
-  analogWrite(rightMotor_PWM_pin, (readByte2 * 4) - 1);
-  motorMove();
+//  analogWrite(leftMotor_PWM_pin, (readByte1 * 4) - 1);
+//  analogWrite(rightMotor_PWM_pin, (readByte2 * 4) - 1);
+//  motorMove();
 }
