@@ -1,4 +1,4 @@
-int joystickNaught1, joystickNaught2;
+int joystickNaught1, joystickNaught2; //The Values of the Joystick when not being moved
 
 void timer1Setup(){
     TCCR1A = 0; // first zero the registers
@@ -47,8 +47,6 @@ void setup() {
     digitalWrite(8, LOW);
 }
 
-byte test = 42;
-
 //Packet 1:
 // Left Motor Power
 // Packet 2:
@@ -59,47 +57,47 @@ byte test = 42;
 // No information yet (send 4);
 
 void loop() {
-    sendaByte(1); // address byte
-    delay(10);
 
+    //begin reading of joystick
     digitalWrite(8, HIGH);
     delayMicroseconds(5);
-    unsigned long test1, test2;
+    
+    //var declaration
+    byte joystickPow1, joystickPow2;
     int joystickVal1 = analogRead(0);
     int joystickVal2 = analogRead(1);
-    if (joystickVal1 - joystickNaught1 < 0) {
-        test1 = 255 - (255.0 * joystickVal1 / joystickNaught1);
-    } else {
-        test1 = ( (255.0 * joystickVal1) - (255 * joystickNaught1) ) / (1023 - joystickNaught1);
-    }
-
-if (joystickVal2 - joystickNaught2 < 0) {
-        test2 = 255 - ((255.0 * joystickVal2) / (joystickNaught2));
-    } else {
-        test2 = ( 255.0 * (joystickVal2 - joystickNaught2) ) / (1023 - joystickNaught2);
-    }
-
+    
+    //end reading of joystick
     digitalWrite(8, LOW);
 
-    Serial.print("(");
-    Serial.print(test1);
-    Serial.print(", ");
-    Serial.print(test2);
-    Serial.print(")  ");
+    //transfer function
+    if (joystickVal1 - joystickNaught1 < 0) {
+        joystickPow1 = 255 - ((255.0 * joystickVal1) / (joystickNaught1));
+    } else {
+        joystickPow1 = ( (255.0 * joystickVal1) - (255 * joystickNaught1) ) / (1023 - joystickNaught1);
+    }
+    //transfer function
+    if (joystickVal2 - joystickNaught2 < 0) {
+        joystickPow2 = 255 - ((255.0 * joystickVal2) / (joystickNaught2));
+    } else {
+        joystickPow2 = ( 255.0 * (joystickVal2 - joystickNaught2) ) / (1023 - joystickNaught2);
+    }
 
-//765, 766 @ Jz = 511
+/*  Joystick Debug Printing
+    Serial.print("(");
+    Serial.print(joystickPow2);
+    Serial.print(", ");
+    Serial.print(joystickPow2);
+    Serial.print(")  ");
+    //765, 766 @ Jz = 511
     Serial.print("[");
     Serial.print(joystickVal1);
     Serial.print(", ");
     Serial.print((joystickVal2));
     Serial.println("]");
+*/
 
-    sendaByte(test1);
-    delay(10);
-    sendaByte(test2);
-    delay(10);
-
-    byte temp3 = 0b0;
+    byte dataPacket = 0b0;
     if ( (joystickVal1 - 512) > 0) {
         temp3 |= 0b1000;
     };
@@ -107,11 +105,23 @@ if (joystickVal2 - joystickNaught2 < 0) {
     if ( (joystickVal2 - 512) > 0) {
         temp3 |= 0b0100;
     };
-    sendaByte(temp3);
+
+    sendaByte(1); // address byte
     delay(10);
 
-    sendaByte(8);
+    sendaByte(joystickPow1); // The Power of Joystick 1
     delay(10);
 
-    sendaByte(~(joystickVal1 + joystickVal2 + temp3 + 8) + 1);
+    sendaByte(joystickPow2); // The Power of Joystick 2
+    delay(10);
+
+    sendaByte(dataPacket); // Packet of Format: 0b (LeftMotorDir) (RightMotorDir) (Button1State) (Button2State)
+    delay(10);
+
+    sendaByte(8); //extra packet
+    delay(10);
+
+    sendaByte(~(joystickVal1 + joystickVal2 + temp3 + 8) + 1); // check sum
+ 
 }
+// Power saving page 17 transmitter
