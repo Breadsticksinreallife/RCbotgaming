@@ -62,7 +62,7 @@ void receiveSignal() {
   readByte2 = char(mySerial.read());  //Right Motor Power
   while (mySerial.available() < 1)
     ;
-  readByte3 = char(mySerial.read());  // 0000, LMdir, RMdir, B1S, B2S -- 0 is off / cw, 1 is on / ccw
+  readByte3 = char(mySerial.read());  // 0000, LMdir, RMdir, button 1, button 2 -- 0 is off or cw, 1 is on or ccw
   while (mySerial.available() < 1)
     ;
   readByte4 = char(mySerial.read());
