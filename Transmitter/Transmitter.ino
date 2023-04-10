@@ -1,4 +1,4 @@
-
+int joystickNaught1, joystickNaught2;
 
 void timer1Setup(){
     TCCR1A = 0; // first zero the registers
@@ -22,16 +22,16 @@ void offy() {
 }
 
 void sendaByte (byte dataByte) {
-timer1Setup(); // start carrier frequency
-delayMicroseconds(100); // ~2 full cycle running start
-Serial1.write(dataByte); // byte byte, sorry, bye bye byte
-while (!(UCSR1A & (1 << TXC1))); // USART Control Status Reg
-// (p.209),
-// wait for the transmit
-// complete flag, TXC1 bit 6
-// to be set
-delayMicroseconds(100); // modulation overlap on the back end
-offy(); // turn off modulator signal to save power
+    timer1Setup(); // start carrier frequency
+    delayMicroseconds(100); // ~2 full cycle running start
+    Serial1.write(dataByte); // byte byte, sorry, bye bye byte
+    while (!(UCSR1A & (1 << TXC1))); // USART Control Status Reg
+    // (p.209),
+    // wait for the transmit
+    // complete flag, TXC1 bit 6
+    // to be set
+    delayMicroseconds(100); // modulation overlap on the back end
+    offy(); // turn off modulator signal to save power
 }
 
 void setup() {
@@ -39,6 +39,12 @@ void setup() {
     // pinMode(A0, INPUT); //Joystick - V
     // pinMode(A1, INPUT); //Joystick - H
     Serial.begin(9600);
+
+    digitalWrite(8, HIGH);
+    delayMicroseconds(5);
+    joystickNaught1 = analogRead(0);
+    joystickNaught2 = analogRead(1);
+    digitalWrite(8, LOW);
 }
 
 byte test = 42;
@@ -58,15 +64,35 @@ void loop() {
 
     digitalWrite(8, HIGH);
     delayMicroseconds(5);
-    int temp1 = analogRead(0);
-    int temp2 = analogRead(1);
-    byte test1 = abs(temp1 - 512) / 2;
-    byte test2 = abs(temp2 - 502) / 2;
+    unsigned long test1, test2;
+    int joystickVal1 = analogRead(0);
+    int joystickVal2 = analogRead(1);
+    if (joystickVal1 - joystickNaught1 < 0) {
+        test1 = 255 - (255.0 * joystickVal1 / joystickNaught1);
+    } else {
+        test1 = ( (255.0 * joystickVal1) - (255 * joystickNaught1) ) / (1023 - joystickNaught1);
+    }
+
+if (joystickVal2 - joystickNaught2 < 0) {
+        test2 = 255 - ((255.0 * joystickVal2) / (joystickNaught2));
+    } else {
+        test2 = ( 255.0 * (joystickVal2 - joystickNaught2) ) / (1023 - joystickNaught2);
+    }
+
     digitalWrite(8, LOW);
 
+    Serial.print("(");
     Serial.print(test1);
-    Serial.print(" ");
-    Serial.println(test2);
+    Serial.print(", ");
+    Serial.print(test2);
+    Serial.print(")  ");
+
+//765, 766 @ Jz = 511
+    Serial.print("[");
+    Serial.print(joystickVal1);
+    Serial.print(", ");
+    Serial.print((joystickVal2));
+    Serial.println("]");
 
     sendaByte(test1);
     delay(10);
@@ -74,11 +100,11 @@ void loop() {
     delay(10);
 
     byte temp3 = 0b0;
-    if ( (temp1 - 512) > 0) {
+    if ( (joystickVal1 - 512) > 0) {
         temp3 |= 0b1000;
     };
 
-    if ( (temp2 - 512) > 0) {
+    if ( (joystickVal2 - 512) > 0) {
         temp3 |= 0b0100;
     };
     sendaByte(temp3);
@@ -87,5 +113,5 @@ void loop() {
     sendaByte(8);
     delay(10);
 
-    sendaByte(~(test1 + test2 + temp3 + 8) + 1);
+    sendaByte(~(joystickVal1 + joystickVal2 + temp3 + 8) + 1);
 }
