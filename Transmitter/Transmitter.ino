@@ -99,11 +99,11 @@ void loop() {
 
     byte dataPacket = 0b0;
     if ( (joystickVal1 - 512) > 0) {
-        temp3 |= 0b1000;
+        dataPacket |= 0b1000;
     };
 
     if ( (joystickVal2 - 512) > 0) {
-        temp3 |= 0b0100;
+        dataPacket |= 0b0100;
     };
 
     sendaByte(1); // address byte
@@ -121,7 +121,7 @@ void loop() {
     sendaByte(8); //extra packet
     delay(10);
 
-    sendaByte(~(joystickVal1 + joystickVal2 + temp3 + 8) + 1); // check sum
+    sendaByte(~(joystickVal1 + joystickVal2 + dataPacket + 8) + 1); // checksum
  
 }
 // Power saving page 17 transmitter
