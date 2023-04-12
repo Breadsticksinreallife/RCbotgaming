@@ -68,6 +68,9 @@ void receiveSignal() {
 
     while (mySerial.available() < 1);
     checksumPacket = char(mySerial.read());
+  } else {
+    Serial.print(address);
+    Serial.println(" Addy Wrong");
   }
 }
 

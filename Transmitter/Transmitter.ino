@@ -106,7 +106,7 @@ void loop() {
         dataPacket |= 0b0100;
     };
 
-    sendaByte(42); // address byte
+    sendaByte(1); // address byte
     delay(10);
 
     sendaByte(joystickPow1); // The Power of Joystick 1
