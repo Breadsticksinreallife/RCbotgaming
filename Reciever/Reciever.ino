@@ -1,7 +1,7 @@
 #include <SoftwareSerial.h>
 
 SoftwareSerial mySerial(10, 11);
-byte address, packet1, readByte2, packet3, packet4, packet5;
+byte address, packet1, packet2, packet3, packet4, checksumPacket;
 int LMDir;
 int RMDir;
 int LMPower;
@@ -48,31 +48,37 @@ void lookForSignal() {
 }
 
 void receiveSignal() {
-  while (mySerial.available() < 1)
-    ;
+  while (mySerial.available() < 1);
   address = char(mySerial.read());
+  if (address == 1) {
+    Serial.print("Address is correct: ");
+    Serial.println(address);
 
-  while (mySerial.available() < 1)
-    ;
-  packet1 = char(mySerial.read());  //Left Motor Power
+    while (mySerial.available() < 1);
+    packet1 = char(mySerial.read());  //Left Motor Power
 
-  while (mySerial.available() < 1);
-  packet2 = char(mySerial.read());  //Right Motor Power
+    while (mySerial.available() < 1);
+    packet2 = char(mySerial.read());  //Right Motor Power
 
-  while (mySerial.available() < 1);
-  packet3 = char(mySerial.read());  // 0000, LMdir, RMdir, button 1, button 2 -- 0 is off or cw, 1 is on or ccw
+    while (mySerial.available() < 1);
+    packet3 = char(mySerial.read());  // 0000, LMdir, RMdir, button 1, button 2 -- 0 is off or cw, 1 is on or ccw
 
-  while (mySerial.available() < 1);
-  packet4 = char(mySerial.read());
+    while (mySerial.available() < 1);
+    packet4 = char(mySerial.read());
 
-  while (mySerial.available() < 1);
-  packet5 = char(mySerial.read());
+    while (mySerial.available() < 1);
+    checksumPacket = char(mySerial.read());
+  }
 }
 
 bool verifyChecksum() {
   byte checksum = ~(packet1 + packet2 + packet3 + packet4) + 1;
-  if (checksum != packet5) {
-    Serial.println("Checksum Does Not Match");
+  if (checksum != checksumPacket) {
+    Serial.print(checksum);
+    Serial.print(" | ");
+    Serial.print(checksumPacket);
+    Serial.print("  ");
+    Serial.println("!# !# !# Checksum did not verify. #! #! #!");
   }
 }
 
@@ -118,10 +124,18 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-  receiveSignal();
-  verifyChecksum();
-  delay(10);
-//  analogWrite(leftMotor_PWM_pin, (packet1 * 4) - 1);
-//  analogWrite(rightMotor_PWM_pin, (packet2 * 4) - 1);
-//  motorMove();
+    receiveSignal();
+    if (verifyChecksum()){
+      Serial.print("Left Motor Power: ");
+      Serial.print(packet1);
+      Serial.print("| Right Motor Power: ");
+      Serial.print(packet2);
+      Serial.print("| Left Motor Direction: ");
+      Serial.print(packet3 >> 3);
+      Serial.print("| Right Motor Direction: ");
+      Serial.print(packet3 >> 2);
+      Serial.print("| ");
+      Serial.println(packet4);
+    }
+  delay(1000);
 }
