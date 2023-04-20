@@ -51,8 +51,6 @@ void receiveSignal() {
   while (mySerial.available() < 1);
   address = char(mySerial.read());
   if (address == 1) {
-    Serial.print("Address is correct: ");
-    Serial.println(address);
 
     while (mySerial.available() < 1);
     packet1 = char(mySerial.read());  //Left Motor Power
@@ -68,49 +66,38 @@ void receiveSignal() {
 
     while (mySerial.available() < 1);
     checksumPacket = char(mySerial.read());
-  } else {
-    Serial.print(address);
-    Serial.println(" Addy Wrong");
   }
 }
 
 bool verifyChecksum() {
-  byte checksum = ~(packet1 + packet2 + packet3 + packet4) + 1;
-  if (checksum != checksumPacket) {
-    Serial.print(checksum);
-    Serial.print(" | ");
-    Serial.print(checksumPacket);
-    Serial.print("  ");
-    Serial.println("!# !# !# Checksum did not verify. #! #! #!");
-  }
+  Serial.println("---");
+  Serial.println(packet1);
+  Serial.println(packet2);
+  Serial.println(packet3);
+  Serial.println(packet4);
+  Serial.println(checksumPacket);
+  return (byte)(packet1 + packet2 + packet3 + packet4 + checksumPacket) == 0;
 }
 
 void simpleSignal() {
   while (mySerial.available() < 1)
     ;
   address = char(mySerial.read());
-  Serial.println(address);
 }
 
 //Translating transmission into outputs
 void motorMove() {
   LMPower = packet1;
   RMPower = packet2;
-  Serial.print("LM speed is ");
-  Serial.println(LMPower);
-  Serial.println(" at direction ");
   if ((packet3 >> 3) & 1) {
-    Serial.println("lmccw");
+    // Serial.println("lmccw");
   } else {
-    Serial.println("lmcw");
+    // Serial.println("lmcw");
   }
-    Serial.print("RM speed is ");
-  Serial.println(LMPower);
-  Serial.println(" at direction");
   if ((packet3 >> 2) & 1) {
-    Serial.println("rmccw");
+    // Serial.println("rmccw");
   } else {
-    Serial.println("rmcw");
+    // Serial.println("rmcw");
   }
 }
 
@@ -129,16 +116,8 @@ void loop() {
   // put your main code here, to run repeatedly:
     receiveSignal();
     if (verifyChecksum()){
-      Serial.print("Left Motor Power: ");
-      Serial.print(packet1);
-      Serial.print("| Right Motor Power: ");
-      Serial.print(packet2);
-      Serial.print("| Left Motor Direction: ");
-      Serial.print(packet3 >> 3);
-      Serial.print("| Right Motor Direction: ");
-      Serial.print(packet3 >> 2);
-      Serial.print("| ");
-      Serial.println(packet4);
+      Serial.println("g");
+    } else {
+      Serial.println("b");
     }
-  delay(1000);
 }
