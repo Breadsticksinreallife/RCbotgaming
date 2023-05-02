@@ -36,17 +36,6 @@ void RMccw() {
   digitalWrite(rightMotor_IN2, HIGH);
 }
 
-//Reading wireless transmissions
-void lookForSignal() {
-  while (mySerial.available() < 5)
-    ;
-  address = char(mySerial.read());
-  packet1 = char(mySerial.read());
-  packet2 = char(mySerial.read());
-  packet3 = char(mySerial.read());
-  packet4 = char(mySerial.read());
-}
-
 void receiveSignal() {
   while (mySerial.available() < 1);
   address = char(mySerial.read());
@@ -70,35 +59,14 @@ void receiveSignal() {
 }
 
 bool verifyChecksum() {
-  Serial.println("---");
+  byte checksumVer = packet1 + packet2 + packet3 + packet4 + checksumPacket;
+  Serial.println("-");
   Serial.println(packet1);
   Serial.println(packet2);
   Serial.println(packet3);
   Serial.println(packet4);
-  Serial.println(checksumPacket);
-  return (byte)(packet1 + packet2 + packet3 + packet4 + checksumPacket) == 0;
-}
-
-void simpleSignal() {
-  while (mySerial.available() < 1)
-    ;
-  address = char(mySerial.read());
-}
-
-//Translating transmission into outputs
-void motorMove() {
-  LMPower = packet1;
-  RMPower = packet2;
-  if ((packet3 >> 3) & 1) {
-    // Serial.println("lmccw");
-  } else {
-    // Serial.println("lmcw");
-  }
-  if ((packet3 >> 2) & 1) {
-    // Serial.println("rmccw");
-  } else {
-    // Serial.println("rmcw");
-  }
+  Serial.println(checksumVer);
+  return checksumVer == 0;
 }
 
 void setup() {
