@@ -15,17 +15,15 @@ int RMPower;
 #define rightMotor_IN1 7
 #define rightMotor_IN2 8
 #define rightMotor_PWM_pin 6
-
+#define buttonPin 12
 void LMcw() {
-  digitalWrite(leftMotor_IN1, HIGH);
-  digitalWrite(leftMotor_IN2, LOW);
-}
-
-void LMccw() {
   digitalWrite(leftMotor_IN1, LOW);
   digitalWrite(leftMotor_IN2, HIGH);
 }
-
+void LMccw() {
+  digitalWrite(leftMotor_IN1, HIGH);
+  digitalWrite(leftMotor_IN2, LOW);
+}
 void RMcw() {
   digitalWrite(rightMotor_IN1, HIGH);
   digitalWrite(rightMotor_IN2, LOW);
@@ -78,14 +76,22 @@ void setup() {
   pinMode(rightMotor_IN1, OUTPUT);
   pinMode(rightMotor_IN2, OUTPUT);
   packet3 = 0b00001000;
+  pinMode(buttonPin, OUTPUT);
+  while (digitalRead(buttonPin) == HIGH)
+    ;
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-    receiveSignal();
+/*    receiveSignal();
     if (verifyChecksum()){
       Serial.println("g");
     } else {
       Serial.println("b");
-    }
+    }*/
+    LMccw();
+    RMccw();
+    analogWrite(leftMotor_PWM_pin, 128);
+    analogWrite(rightMotor_PWM_pin, 128);
+
 }
