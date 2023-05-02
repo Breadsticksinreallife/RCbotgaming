@@ -95,29 +95,19 @@ void loop() {
     sendaByte(1); // address byte
     delay(10);
 
-    // sendaByte(joystickPow1); // The Power of Joystick 1
-    // delay(10);
-
-    sendaByte(joystickVal1);
+    sendaByte(joystickPow1); // The Power of Joystick 1
     delay(10);
 
-    // sendaByte(joystickPow2); // The Power of Joystick 2
-    // delay(10);
-
-    sendaByte(0);
+    sendaByte(joystickPow2); // The Power of Joystick 2
     delay(10);
 
-    // sendaByte(dataPacket); // Packet of Format: 0b (LeftMotorDir) (RightMotorDir) (Button1State) (Button2State)
-    // delay(10);
-
-    sendaByte(0);
+    sendaByte(dataPacket); // Packet of Format: 0b (LeftMotorDir) (RightMotorDir) (Button1State) (Button2State)
     delay(10);
 
     sendaByte(8); //extra packet
     delay(10);
 
-    // sendaByte(~(joystickVal1 + joystickVal2 + dataPacket + 8) + 1); // checksum
-    sendaByte(~(joystickVal1 + 0 + 0 + 8) + 1); // checksum
- 
+    sendaByte(~(joystickPow1 + joystickPow2 + dataPacket + 8) + 1); // checksum
+
 }
 // Power saving page 17 transmitter
