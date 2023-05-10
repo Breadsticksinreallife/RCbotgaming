@@ -95,6 +95,18 @@ void motorControl() {
   //Serial.println("wroking");
 }
 
+void PWMer1024(int pulse) {
+  pinMode (3, OUTPUT); // our servo port
+  const byte n = 156;
+  // fast PWM, clear OC2A on compare
+  TCCR2A = bit (WGM20) | bit (WGM21) | bit (COM2B1);
+  // fast PWM, prescaler of 1024
+  TCCR2B = bit (WGM22) | bit (CS22) | bit (CS21) | bit (CS20);
+  OCR2A = n; // from Nick Gammon table
+  // http://www.gammon.com.au/timers
+  OCR2B = pulse; // pulse 15=1023us, 23=1535us, 29=1919us
+}
+
 void setup() {
   // put your setup code here, to run once:
   mySerial.begin(4800);
@@ -111,10 +123,14 @@ void loop() {
   // put your main code here, to run repeatedly:
   receiveSignal();
   if (verifyChecksum()) {
-    //Serial.println("g");
     motorControl();
+    if ((packet3 & 0b10) >> 1) {
+      PWMer1024(2000);
+    }
+    if ((packet3 & 0b1)) {
+      PWMer1024(1500);
+    }
   } else {
-    Serial.println("b");
     analogWrite(leftMotor_PWM_pin, 0);
     analogWrite(rightMotor_PWM_pin, 0);
   }

@@ -1,4 +1,7 @@
 int joystickNaught1, joystickNaught2; //The Values of the Joystick when not being moved
+#define User1 16
+#define User2 14
+
 
 void timer1Setup(){
     TCCR1A = 0; // first zero the registers
@@ -45,6 +48,9 @@ void setup() {
     joystickNaught1 = analogRead(0);
     joystickNaught2 = analogRead(1);
     digitalWrite(8, LOW);
+
+    pinMode(User1, INPUT_PULLUP);
+    pinMode(User2, INPUT_PULLUP);
 }
 
 //Packet 1:
@@ -91,6 +97,16 @@ void loop() {
     if ( (joystickVal2 - 512) > 0) {
         dataPacket |= 0b0100;
     };
+
+    if (!digitalRead(User1)) {
+        dataPacket |= 0b10;
+        Serial.println("d");
+    }
+
+    if (!digitalRead(User2)) {
+        dataPacket |= 0b1;
+        Serial.println("d");
+    }
 
     sendaByte(1); // address byte
     delay(10);
