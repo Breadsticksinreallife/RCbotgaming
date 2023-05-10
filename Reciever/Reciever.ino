@@ -125,10 +125,10 @@ void loop() {
   if (verifyChecksum()) {
     motorControl();
     if ((packet3 & 0b10) >> 1) {
-      PWMer1024(2000);
+      PWMer1024(29);
     }
     if ((packet3 & 0b1)) {
-      PWMer1024(1500);
+      PWMer1024(15);
     }
   } else {
     analogWrite(leftMotor_PWM_pin, 0);
