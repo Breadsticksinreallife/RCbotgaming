@@ -125,7 +125,7 @@ void loop() {
   if (verifyChecksum()) {
     motorControl();
     if ((packet3 & 0b10) >> 1) {
-      PWMer1024(29);
+      PWMer1024(26);
     }
     if ((packet3 & 0b1)) {
       PWMer1024(15);
